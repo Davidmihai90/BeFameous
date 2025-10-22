@@ -10,6 +10,23 @@
       ],
       "destination": "https://befameous.ro/$1",
       "permanent": true
+    },
+    {
+      "source": "/dashboard/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "authToken",
+          "value": ".*"
+        }
+      ],
+      "destination": "/dashboard/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "/login",
+      "permanent": false
     }
   ],
   "headers": [
