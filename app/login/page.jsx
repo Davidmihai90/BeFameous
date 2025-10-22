@@ -1,114 +1,106 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/components/AuthProvider';
+import Link from 'next/link';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { user, profile, loading } = useAuth();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loadingLogin, setLoadingLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // 🔁 Dacă e deja logat, redirecționează automat
-  useEffect(() => {
-    if (loading) return;
-    if (user && profile?.role) {
-      if (profile.role === 'influencer') router.replace('/dashboard/influencer');
-      else if (profile.role === 'brand') router.replace('/dashboard/brand');
-      else router.replace('/');
-    }
-  }, [user, profile, loading, router]);
-
-  // 🔹 Funcția de login
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError('');
-    setLoadingLogin(true);
 
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      const ref = doc(db, 'users', user.uid);
+      const snap = await getDoc(ref);
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        if (userData.role === 'influencer') router.push('/dashboard/influencer');
-        else if (userData.role === 'brand') router.push('/dashboard/brand');
-        else router.push('/');
-      } else {
-        setError('Profilul utilizatorului nu există în baza de date.');
+      if (!snap.exists()) {
+        setError('Profilul utilizatorului nu există.');
+        setLoading(false);
+        return;
+      }
+
+      const role = snap.data().role;
+
+      // 🔁 Redirecționează automat după rol
+      switch (role) {
+        case 'brand':
+          router.push('/dashboard/brand');
+          break;
+        case 'influencer':
+          router.push('/dashboard/influencer');
+          break;
+        case 'admin':
+          router.push('/dashboard/admin');
+          break;
+        default:
+          router.push('/');
+          break;
       }
     } catch (err) {
       console.error(err);
       setError('Email sau parolă incorecte.');
     } finally {
-      setLoadingLogin(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form
-        onSubmit={handleLogin}
-        className="bg-gradient-to-b from-[#111] to-[#0b0b0b] p-8 rounded-2xl border border-white/10 shadow-lg w-full max-w-md space-y-5"
-      >
-        <h1 className="text-2xl font-bold text-center mb-4">Autentificare</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
+      <div className="w-full max-w-md bg-white/10 border border-white/10 rounded-2xl p-8 shadow-lg">
+        <h1 className="text-3xl font-bold text-center mb-6">Autentificare</h1>
 
-        {error && (
-          <p className="text-red-400 text-center bg-red-950/30 border border-red-700/30 py-2 rounded-md">
-            {error}
-          </p>
-        )}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm mb-1 text-gray-400">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-black/40 border border-white/15 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 text-sm text-gray-300">Email</label>
-          <input
-            type="email"
-            className="w-full p-3 rounded-lg bg-black/40 border border-white/10 focus:border-[#a855f7] outline-none"
-            placeholder="exemplu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label className="block text-sm mb-1 text-gray-400">Parolă</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-black/40 border border-white/15 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+            />
+          </div>
 
-        <div>
-          <label className="block mb-2 text-sm text-gray-300">Parolă</label>
-          <input
-            type="password"
-            className="w-full p-3 rounded-lg bg-black/40 border border-white/10 focus:border-[#a855f7] outline-none"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loadingLogin}
-          style={{
-            background: 'linear-gradient(90deg, #9333ea 0%, #a855f7 100%)',
-            boxShadow: '0 0 12px rgba(168,85,247,0.6)',
-            border: 'none',
-          }}
-          className="w-full py-3 rounded-lg text-white font-semibold hover:brightness-110 transition disabled:opacity-50"
-        >
-          {loadingLogin ? 'Se autentifică...' : 'Autentifică-te'}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-purple-600 to-purple-800 py-2 rounded-lg font-semibold hover:scale-105 transition-transform"
+          >
+            {loading ? 'Se conectează...' : 'Autentifică-te'}
+          </button>
+        </form>
 
-        <p className="text-center text-gray-400 text-sm mt-4">
+        <p className="text-center text-sm text-gray-400 mt-4">
           Nu ai cont?{' '}
-          <a href="/register" className="text-[#a855f7] hover:underline">
-            Creează unul acum
-          </a>
+          <Link href="/register" className="text-purple-400 hover:underline">
+            Creează unul
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

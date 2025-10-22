@@ -121,12 +121,12 @@ export default function AuthProvider({ children }) {
   }, [state.user]);
 
   if (state.loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white/70">
-        Se încarcă sesiunea...
-      </div>
-    );
-  }
+  return (
+    <div className="min-h-screen flex items-center justify-center text-white/70">
+      Se încarcă sesiunea...
+    </div>
+  );
+}
 
   return (
     <AuthContext.Provider value={{ ...state, hasNewMessage, setHasNewMessage }}>
