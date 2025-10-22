@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global dark theme */
+:root { color-scheme: dark; }
+
+/* Smooth font rendering */
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Gradient helpers */
+.bg-hero {
+  @apply bg-gradient-to-b from-black via-[#0b0b0f] to-[#0b0b0f];
+}
+.card {
+  @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-xl;
+}
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition;
+}
+.btn-primary {
+  @apply btn bg-brand hover:bg-brand/90 text-white;
+}
+.btn-ghost {
+  @apply btn bg-white/10 hover:bg-white/20 text-white;
+}
+.container-p {
+  @apply max-w-6xl mx-auto px-4;
+}
