@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function HomePage() {
   const [platform, setPlatform] = useState('');

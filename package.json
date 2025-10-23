@@ -1,26 +1,29 @@
 {
   "name": "befameous",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm version patch --no-git-tag-version && npx tailwindcss -i ./styles/input.css -o ./app/globals.css --minify && next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "tailwindcss -i ./styles/input.css -o ./app/globals.css --minify || echo 'Tailwind built'"
+    "lint": "next lint"
   },
   "dependencies": {
-    "clsx": "2.1.1",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.1.3",
+    "@vercel/speed-insights": "^1.2.0",
+    "clsx": "^2.1.1",
     "firebase": "^12.4.0",
-    "framer-motion": "^12.23.24",
-    "lucide-react": "^0.546.0",
+    "framer-motion": "^11.0.1",
+    "lucide-react": "^0.387.0",
     "next": "^14.2.33",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "sharp": "^0.34.4"
   },
   "devDependencies": {
-    "autoprefixer": "10.4.19",
-    "postcss": "8.4.38",
-    "tailwindcss": "3.4.13"
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.3"
   }
 }
