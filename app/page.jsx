@@ -4,21 +4,28 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { useAuth } from '@/components/AuthProvider';
+import FirebaseDebug from '@/components/FirebaseDebug';
 
 export default function HomePage() {
   const [platform, setPlatform] = useState('');
   const [category, setCategory] = useState('');
   const [topInfluencers, setTopInfluencers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user, profile, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const load = async () => {
       try {
         const snap = await getDocs(collection(db, 'users'));
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         const filtered = data
-          .filter(u => u.role === 'influencer' && (u.active || u.rating >= 4.5))
+          .filter(
+            (u) =>
+              u.role === 'influencer' &&
+              (u.active || (u.rating ?? 0) >= 4.5)
+          )
           .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
           .slice(0, 9);
         setTopInfluencers(filtered);
@@ -38,8 +45,7 @@ export default function HomePage() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-
-      {/* HERO CU SEARCH */}
+      {/* HERO + SEARCH */}
       <section className="relative flex flex-col items-center justify-center text-center py-28 px-4 overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
@@ -89,6 +95,36 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* STATUS UTILIZATOR */}
+      <section className="max-w-4xl mx-auto text-center px-6 mb-10">
+        {authLoading ? (
+          <p className="text-gray-400">Se încarcă sesiunea...</p>
+        ) : user ? (
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/10">
+            <h2 className="text-2xl font-bold text-purple-400 mb-2">
+              Conectat ca influencer sau brand
+            </h2>
+            <p className="text-gray-300 mb-1">UID: {user.uid}</p>
+            <p className="text-gray-400 text-sm mb-1">Email: {user.email}</p>
+            <p className="text-gray-500 text-xs">
+              Rol: <b>{profile?.role || 'neatribuit'}</b>
+            </p>
+          </div>
+        ) : (
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <p className="text-gray-400 mb-3">
+              Nu ești autentificat în acest moment.
+            </p>
+            <a
+              href="/login"
+              className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              Autentifică-te
+            </a>
+          </div>
+        )}
+      </section>
+
       {/* INFLUENCERI DE TOP */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <h2 className="text-3xl font-bold mb-10 text-center">
@@ -113,7 +149,9 @@ export default function HomePage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
                   <div className="absolute bottom-4 left-4">
-                    <h3 className="font-bold text-lg">{inf.displayName || 'Influencer'}</h3>
+                    <h3 className="font-bold text-lg">
+                      {inf.displayName || 'Influencer'}
+                    </h3>
                     <p className="text-sm text-gray-300 capitalize">
                       {inf.platform || 'Platformă necunoscută'}
                     </p>
@@ -122,7 +160,9 @@ export default function HomePage() {
 
                 <div className="p-4 flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">{inf.category || 'Categorie'}</p>
+                    <p className="text-sm text-gray-400">
+                      {inf.category || 'Categorie'}
+                    </p>
                     <p className="font-semibold text-purple-400">
                       ⭐ {inf.rating || '5.0'}
                     </p>
@@ -136,6 +176,13 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* DEBUG FIREBASE */}
+      <section className="max-w-5xl mx-auto px-6 pb-16">
+        <FirebaseDebug />
+      </section>
+
+      <SpeedInsights />
     </div>
   );
 }
