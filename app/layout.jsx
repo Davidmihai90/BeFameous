@@ -1,11 +1,7 @@
-'use client';
-
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import AuthProvider from '@/components/AuthProvider';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import LayoutClient from '@/components/LayoutClient';
 
 // 🟣 Metadata SEO + favicon
 export const metadata = {
@@ -31,12 +27,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ro">
       <body className="bg-black text-white min-h-screen flex flex-col">
-        <AuthProvider>
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </AuthProvider>
-
+        <LayoutClient>{children}</LayoutClient>
         {/* 🔍 Analytics + Performance */}
         <Analytics />
         <SpeedInsights />
