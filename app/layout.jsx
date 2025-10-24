@@ -1,39 +1,45 @@
+'use client';
+
 import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import AuthProvider from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import AuthProvider from '@/components/AuthProvider';
 
-// 🧠 Meta SEO standard
+// 🟣 Metadata SEO + favicon
 export const metadata = {
   title: 'BeFameous',
   description: 'Platformă de conectare influenceri și branduri',
-  charset: 'utf-8',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
-// 📱 Viewport modern (mutat separat)
+// 🟣 Viewport config (Next.js 14+)
 export const viewport = {
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#000000',
+  viewportFit: 'cover',
 };
 
-// 🧱 Layout general aplicabil tuturor paginilor
 export default function RootLayout({ children }) {
   return (
     <html lang="ro">
       <body className="bg-black text-white min-h-screen flex flex-col">
-        {/* Provider pentru autentificare globală */}
         <AuthProvider>
-          {/* Bara de navigare globală */}
           <Navbar />
-
-          {/* Conținutul principal */}
           <main className="flex-grow">{children}</main>
-
-          {/* Footer global */}
           <Footer />
         </AuthProvider>
+
+        {/* 🔍 Analytics + Performance */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
