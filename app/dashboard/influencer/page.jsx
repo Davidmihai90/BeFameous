@@ -5,14 +5,27 @@ import { useAuth } from '@/components/AuthProvider';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
+// Importăm componentele pentru fiecare tab
+import InfluencerDetails from './InfluencerDetails';
+import InfluencerInstagram from './InfluencerInstagram';
+import InfluencerFacebook from './InfluencerFacebook';
+import InfluencerTiktok from './InfluencerTiktok';
+import InfluencerAltele from './InfluencerAltele';
+import InfluencerPortofoliu from './InfluencerPortofoliu';
+import InfluencerFAQ from './InfluencerFAQ';
+
 export default function InfluencerDashboard() {
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState('detalii');
 
   if (loading) return <div className="p-6 text-white/70">Se încarcă sesiunea...</div>;
-  if (!user) { redirect('/login'); return null; }
-  if (profile?.role !== 'influencer')
+  if (!user) {
+    redirect('/login');
+    return null;
+  }
+  if (profile?.role !== 'influencer') {
     return <div className="p-6 text-white/70">Acces permis doar pentru conturile de tip Influencer.</div>;
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
@@ -20,6 +33,7 @@ export default function InfluencerDashboard() {
 
       {/* 🔹 Bara taburi + butoane Vezi profil public & Mesaje */}
       <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-4 mb-6">
+        {/* TABURI */}
         <div className="flex flex-wrap gap-2">
           {[
             { key: 'detalii', label: 'Detalii Influencer' },
@@ -36,8 +50,8 @@ export default function InfluencerDashboard() {
               className={[
                 'px-4 py-2 rounded-lg transition text-sm font-medium',
                 tab === t.key
-                  ? 'bg-purple-700 text-white'
-                  : 'bg-white/5 text-white/80 hover:bg-white/10'
+                  ? 'bg-fuchsia-700 text-white'
+                  : 'bg-white/5 text-white/80 hover:bg-white/10',
               ].join(' ')}
             >
               {t.label}
@@ -45,7 +59,8 @@ export default function InfluencerDashboard() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* BUTOANE: vezi profil + mesaje */}
+        <div className="flex items-center gap-3 mt-3 md:mt-0">
           {profile?.slug && (
             <Link
               href={`/influencer/${profile.slug}`}
@@ -55,6 +70,7 @@ export default function InfluencerDashboard() {
               Vezi profil public
             </Link>
           )}
+
           <Link
             href="/messages"
             className="px-4 py-2 bg-fuchsia-700 hover:bg-fuchsia-800 rounded-lg text-sm font-medium transition"
@@ -64,8 +80,16 @@ export default function InfluencerDashboard() {
         </div>
       </div>
 
-      {/* 🔹 Conținut taburi — rămâne neschimbat */}
-      {/* ... restul codului (Detalii, Platforme, Portofoliu, FAQ) ... */}
+      {/* 🔹 Conținut taburi */}
+      <div className="space-y-6">
+        {tab === 'detalii' && <InfluencerDetails />}
+        {tab === 'instagram' && <InfluencerInstagram />}
+        {tab === 'facebook' && <InfluencerFacebook />}
+        {tab === 'tiktok' && <InfluencerTiktok />}
+        {tab === 'altele' && <InfluencerAltele />}
+        {tab === 'portofoliu' && <InfluencerPortofoliu />}
+        {tab === 'faq' && <InfluencerFAQ />}
+      </div>
     </div>
   );
 }
