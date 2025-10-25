@@ -1,6 +1,6 @@
 {
   "name": "befameous",
-  "version": "1.0.9",
+  "version": "1.0.17",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,8 @@
     "next": "^14.2.33",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.4",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",

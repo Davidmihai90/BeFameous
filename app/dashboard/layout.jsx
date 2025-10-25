@@ -3,8 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 
 export default function DashboardLayout({ children }) {
   const { user, loading, profile } = useAuth();
@@ -31,9 +29,9 @@ export default function DashboardLayout({ children }) {
       </div>
     );
 
+  // 🔹 fără bara de sus și fără footer — doar conținutul efectiv al dashboardului
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* 🔹 Conținutul real al dashboardului */}
       <main className="max-w-7xl mx-auto w-full p-6">{children}</main>
     </div>
   );

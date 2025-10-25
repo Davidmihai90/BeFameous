@@ -13,15 +13,12 @@ export default function Navbar() {
   const router = useRouter();
   const { user, profile, hasNewMessage, setHasNewMessage } = useAuth();
 
-  // 🔹 Stare locală pentru afișarea badge-ului (vizual)
   const [showBadge, setShowBadge] = useState(false);
 
-  // 🔁 Sincronizăm badge-ul local cu cel global
   useEffect(() => {
     setShowBadge(hasNewMessage);
   }, [hasNewMessage]);
 
-  // 🧭 Ascultăm evenimentul global „newMessage” emis de AuthProvider
   useEffect(() => {
     const handler = () => {
       setShowBadge(true);
@@ -47,7 +44,6 @@ export default function Navbar() {
     router.push('/login');
   };
 
-  // 🟣 Resetăm badge-ul când intră pe pagini de mesaje
   useEffect(() => {
     if (pathname.startsWith('/messages') || pathname.startsWith('/chat/')) {
       setHasNewMessage(false);
@@ -73,14 +69,6 @@ export default function Navbar() {
         <nav className="ml-auto flex items-center gap-1 relative">
           {link('/', 'Acasă')}
           {link('/campaigns', 'Campanii')}
-
-          {/* 🟣 Link “Mesaje” cu badge luxury */}
-          <div className="relative">
-            {link('/messages', 'Mesaje')}
-            {showBadge && (
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-gradient-to-br from-red-500 via-pink-500 to-yellow-400 border-[2px] border-pink-200 rounded-full shadow-[0_0_8px_rgba(255,100,150,0.9)] animate-bounce-badge" />
-            )}
-          </div>
 
           {/* dacă e logat ca brand */}
           {user && profile?.role === 'brand' && link('/dashboard/brand', 'Dashboard Brand')}
@@ -109,7 +97,7 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* 🔴 Stil global pentru animația badge-ului */}
+      {/* 🔴 Stil global pentru animația badge-ului (păstrat intact pentru compatibilitate viitoare) */}
       <style jsx global>{`
         @keyframes pulseBadge {
           0%, 100% { transform: scale(1); opacity: 1; }
