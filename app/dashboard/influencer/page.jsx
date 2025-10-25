@@ -57,7 +57,7 @@ export default function InfluencerDashboard() {
           )}
           <Link
             href="/messages"
-            className="px-4 py-2 bg-purple-700 hover:bg-purple-800 rounded-lg text-sm font-medium transition"
+            className="px-4 py-2 bg-fuchsia-700 hover:bg-fuchsia-800 rounded-lg text-sm font-medium transition"
           >
             💬 Mesaje
           </Link>
