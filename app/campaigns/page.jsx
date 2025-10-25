@@ -16,17 +16,23 @@ export default function CampaignsPage() {
   }, []);
 
   return (
-    <div className="container-p py-8 space-y-8">
-      <h1 className="text-2xl font-bold text-white">Campanii active</h1>
+    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white py-12 px-6">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <h1 className="text-4xl font-extrabold text-center mb-8 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+          Campanii Active
+        </h1>
 
-      {campaigns.length === 0 && (
-        <p className="text-white/70">Momentan nu există campanii active.</p>
-      )}
+        {campaigns.length === 0 && (
+          <p className="text-white/70 text-center text-lg">
+            Momentan nu există campanii active.
+          </p>
+        )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {campaigns.map((c) => (
-          <CampaignCard key={c.id} c={c} />
-        ))}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {campaigns.map((c) => (
+            <CampaignCard key={c.id} c={c} />
+          ))}
+        </div>
       </div>
     </div>
   );
