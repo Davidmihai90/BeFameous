@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
   fetchSignInMethodsForEmail,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp, getDocs, query, where, collection } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,7 +34,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // ✅ 1️⃣ Verifică dacă emailul există deja
+      // Verifică dacă emailul există deja
       const methods = await fetchSignInMethodsForEmail(auth, email);
       if (methods.length > 0) {
         setError('Există deja un cont asociat acestui email.');
@@ -40,13 +42,13 @@ export default function RegisterPage() {
         return;
       }
 
-      // ✅ 2️⃣ Creează utilizatorul
+      // Creează utilizatorul
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       await updateProfile(user, { displayName });
 
-      // ✅ 3️⃣ Creează document Firestore
+      // Creează document Firestore
       const slug = createSlug(displayName);
       const userData = {
         uid: user.uid,
@@ -64,7 +66,6 @@ export default function RegisterPage() {
 
       await setDoc(doc(db, 'users', user.uid), userData);
 
-      alert('Cont creat cu succes!');
       router.push(role === 'brand' ? '/dashboard/brand' : '/dashboard/influencer');
     } catch (err) {
       console.error('Eroare înregistrare:', err);
@@ -77,9 +78,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
-      <div className="max-w-md w-full bg-white/5 p-8 rounded-2xl border border-white/10">
-        <h1 className="text-3xl font-bold mb-6 text-center">Creează un cont</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black to-gray-900 text-white px-6">
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="BeFameous"
+            width={160}
+            height={90}
+            priority
+            loading="eager"
+          />
+        </div>
+
+        <h1 className="text-2xl font-bold text-center mb-6">Creează un cont</h1>
 
         <form onSubmit={handleRegister} className="space-y-4">
           <input
@@ -87,7 +99,7 @@ export default function RegisterPage() {
             placeholder="Nume și prenume"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 placeholder-white/50 focus:outline-none focus:border-purple-500"
+            className="w-full p-3 rounded-lg bg-black/50 border border-white/15 focus:outline-none focus:border-purple-500"
             required
           />
 
@@ -96,7 +108,7 @@ export default function RegisterPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 placeholder-white/50 focus:outline-none focus:border-purple-500"
+            className="w-full p-3 rounded-lg bg-black/50 border border-white/15 focus:outline-none focus:border-purple-500"
             required
           />
 
@@ -105,7 +117,7 @@ export default function RegisterPage() {
             placeholder="Parolă"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 placeholder-white/50 focus:outline-none focus:border-purple-500"
+            className="w-full p-3 rounded-lg bg-black/50 border border-white/15 focus:outline-none focus:border-purple-500"
             required
           />
 
@@ -114,7 +126,7 @@ export default function RegisterPage() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 text-gray-200 focus:outline-none focus:border-purple-500"
+              className="w-full p-3 rounded-lg bg-black/50 border border-white/15 text-gray-200 focus:outline-none focus:border-purple-500"
             >
               <option value="influencer">Influencer</option>
               <option value="brand">Brand</option>
@@ -124,13 +136,29 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-purple-800 py-3 rounded-lg font-semibold hover:scale-105 transition-transform"
+            className={`w-full py-3 rounded-lg font-semibold transition ${
+              loading
+                ? 'bg-purple-900 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-600 to-purple-800 hover:scale-105'
+            }`}
           >
             {loading ? 'Se creează...' : 'Creează cont'}
           </button>
+
+          {error && (
+            <p className="text-red-400 text-sm text-center animate-pulse">{error}</p>
+          )}
         </form>
 
-        {error && <p className="mt-4 text-red-400 text-sm text-center">{error}</p>}
+        <p className="text-center text-sm text-gray-400 mt-6">
+          Ai deja cont?{' '}
+          <Link
+            href="/login"
+            className="text-purple-400 hover:text-purple-300 underline"
+          >
+            Autentifică-te
+          </Link>
+        </p>
       </div>
     </div>
   );
