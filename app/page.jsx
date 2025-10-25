@@ -68,9 +68,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen">
-      {/* HERO fără imagine */}
-      <section className="relative flex flex-col items-center justify-center text-center py-28 px-4 overflow-hidden bg-gradient-to-b from-black via-black/90 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-950 text-white">
+      {/* HERO */}
+      <section className="relative flex flex-col items-center justify-center text-center py-28 px-4 overflow-hidden">
         <h1 className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
           Găsește Influenceri și Branduri Rapid
         </h1>
@@ -108,6 +108,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* SECTIUNI */}
       <Section title="Influenceri Noi" color="text-purple-400" loading={loading} data={newInfluencers} type="influencer" />
       <Section title="Influenceri de Top" color="text-amber-400" loading={loading} data={topInfluencers} type="influencer" top />
       <Section title="Branduri Noi" color="text-pink-400" loading={loading} data={newBrands} type="brand" />
@@ -118,7 +119,7 @@ export default function HomePage() {
   );
 }
 
-/* 🔸 Componentă generală pentru secțiuni */
+/* 🔸 COMPONENTA SECTIUNE */
 function Section({ title, color, loading, data, type, top = false }) {
   return (
     <section className="max-w-6xl mx-auto px-6 py-16">
@@ -142,10 +143,10 @@ function Section({ title, color, loading, data, type, top = false }) {
   );
 }
 
-/* 🔸 Card Influencer */
+/* 🔸 CARD INFLUENCER */
 function InfluencerCard({ data }) {
   return (
-    <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition">
+    <div className="group relative bg-white/10 border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(155,90,255,0.2)] transition-all duration-300">
       <div className="relative h-64 w-full overflow-hidden">
         <Image
           src={data.photoURL || '/demo/influencer1.jpg'}
@@ -175,10 +176,10 @@ function InfluencerCard({ data }) {
   );
 }
 
-/* 🔸 Card Brand */
+/* 🔸 CARD BRAND */
 function BrandCard({ data, top = false }) {
   return (
-    <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-pink-500/50 transition">
+    <div className="group relative bg-white/10 border border-white/10 rounded-2xl overflow-hidden hover:border-pink-500/50 hover:shadow-[0_0_20px_rgba(255,100,180,0.2)] transition-all duration-300">
       <div className="relative h-64 w-full overflow-hidden">
         <Image
           src={data.logoURL || '/demo/brand1.jpg'}
