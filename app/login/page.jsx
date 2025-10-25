@@ -1,103 +1,93 @@
 'use client';
 
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
-
+    setLoading(true);
     try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const ref = doc(db, 'users', user.uid);
-      const snap = await getDoc(ref);
-
-      if (!snap.exists()) {
-        setError('Profilul utilizatorului nu există.');
-        setLoading(false);
-        return;
-      }
-
-      const role = snap.data().role;
-
-      // 🔁 Redirecționează automat după rol
-      switch (role) {
-        case 'brand':
-          router.push('/dashboard/brand');
-          break;
-        case 'influencer':
-          router.push('/dashboard/influencer');
-          break;
-        case 'admin':
-          router.push('/dashboard/admin');
-          break;
-        default:
-          router.push('/');
-          break;
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/dashboard');
     } catch (err) {
+      setError('Email sau parolă incorectă.');
       console.error(err);
-      setError('Email sau parolă incorecte.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
-      <div className="w-full max-w-md bg-white/10 border border-white/10 rounded-2xl p-8 shadow-lg">
-        <h1 className="text-3xl font-bold text-center mb-6">Autentificare</h1>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-black to-gray-900 text-white px-6">
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="BeFameous"
+            width={160}
+            height={90}
+            priority
+            loading="eager"
+          />
+        </div>
+
+        <h1 className="text-2xl font-bold text-center mb-6">Autentificare</h1>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1 text-gray-400">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-black/40 border border-white/15 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 rounded-lg bg-black/50 border border-white/15 focus:outline-none focus:border-purple-500"
+            required
+          />
 
-          <div>
-            <label className="block text-sm mb-1 text-gray-400">Parolă</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-black/40 border border-white/15 text-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
-            />
-          </div>
-
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <input
+            type="password"
+            placeholder="Parolă"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 rounded-lg bg-black/50 border border-white/15 focus:outline-none focus:border-purple-500"
+            required
+          />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-purple-800 py-2 rounded-lg font-semibold hover:scale-105 transition-transform"
+            className={`w-full py-3 rounded-lg font-semibold transition ${
+              loading
+                ? 'bg-purple-900 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-600 to-purple-800 hover:scale-105'
+            }`}
           >
-            {loading ? 'Se conectează...' : 'Autentifică-te'}
+            {loading ? 'Se conectează...' : 'Conectează-te'}
           </button>
+
+          {error && (
+            <p className="text-red-400 text-sm text-center animate-pulse">{error}</p>
+          )}
         </form>
 
-        <p className="text-center text-sm text-gray-400 mt-4">
+        <p className="text-center text-sm text-gray-400 mt-6">
           Nu ai cont?{' '}
-          <Link href="/register" className="text-purple-400 hover:underline">
-            Creează unul
+          <Link
+            href="/register"
+            className="text-purple-400 hover:text-purple-300 underline"
+          >
+            Creează cont
           </Link>
         </p>
       </div>

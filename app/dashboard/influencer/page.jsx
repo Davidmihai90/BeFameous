@@ -1,66 +1,82 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, memo } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/components/AuthProvider';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
-// Importăm componentele pentru fiecare tab
-import InfluencerDetails from './InfluencerDetails';
-import InfluencerInstagram from './InfluencerInstagram';
-import InfluencerFacebook from './InfluencerFacebook';
-import InfluencerTiktok from './InfluencerTiktok';
-import InfluencerAltele from './InfluencerAltele';
-import InfluencerPortofoliu from './InfluencerPortofoliu';
-import InfluencerFAQ from './InfluencerFAQ';
+// Lazy import pentru componente secundare (performanță)
+const InfluencerDetails = dynamic(() => import('./InfluencerDetails'), { ssr: false });
+const InfluencerInstagram = dynamic(() => import('./InfluencerInstagram'), { ssr: false });
+const InfluencerFacebook = dynamic(() => import('./InfluencerFacebook'), { ssr: false });
+const InfluencerTiktok = dynamic(() => import('./InfluencerTiktok'), { ssr: false });
+const InfluencerAltele = dynamic(() => import('./InfluencerAltele'), { ssr: false });
+const InfluencerPortofoliu = dynamic(() => import('./InfluencerPortofoliu'), { ssr: false });
+const InfluencerFAQ = dynamic(() => import('./InfluencerFAQ'), { ssr: false });
 
-export default function InfluencerDashboard() {
+function InfluencerDashboard() {
   const { user, profile, loading } = useAuth();
   const [tab, setTab] = useState('detalii');
 
-  if (loading) return <div className="p-6 text-white/70">Se încarcă sesiunea...</div>;
+  useEffect(() => {
+    // Scroll top pentru UX mai bun când schimbi tabul
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [tab]);
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white/70 animate-pulse">
+        Se încarcă sesiunea...
+      </div>
+    );
+
   if (!user) {
     redirect('/login');
     return null;
   }
-  if (profile?.role !== 'influencer') {
-    return <div className="p-6 text-white/70">Acces permis doar pentru conturile de tip Influencer.</div>;
-  }
+
+  if (profile?.role !== 'influencer')
+    return (
+      <div className="p-6 text-white/70 min-h-screen bg-black flex items-center justify-center">
+        Acces permis doar pentru conturile de tip Influencer.
+      </div>
+    );
+
+  const tabs = [
+    { key: 'detalii', label: 'Detalii Influencer' },
+    { key: 'instagram', label: 'Instagram' },
+    { key: 'facebook', label: 'Facebook' },
+    { key: 'tiktok', label: 'TikTok' },
+    { key: 'altele', label: 'Altele' },
+    { key: 'portofoliu', label: 'Portofoliu' },
+    { key: 'faq', label: 'FAQ' },
+  ];
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
+    <div className="max-w-6xl mx-auto px-6 py-8 bg-black text-white">
       <h1 className="text-2xl font-bold mb-6">Dashboard Influencer</h1>
 
-      {/* 🔹 Bara taburi + butoane Vezi profil public & Mesaje */}
+      {/* Bara de taburi + butoane */}
       <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-4 mb-6">
-        {/* TABURI */}
         <div className="flex flex-wrap gap-2">
-          {[
-            { key: 'detalii', label: 'Detalii Influencer' },
-            { key: 'instagram', label: 'Instagram' },
-            { key: 'facebook', label: 'Facebook' },
-            { key: 'tiktok', label: 'TikTok' },
-            { key: 'altele', label: 'Altele' },
-            { key: 'portofoliu', label: 'Portofoliu' },
-            { key: 'faq', label: 'FAQ' },
-          ].map((t) => (
+          {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={[
-                'px-4 py-2 rounded-lg transition text-sm font-medium',
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                 tab === t.key
-                  ? 'bg-fuchsia-700 text-white'
-                  : 'bg-white/5 text-white/80 hover:bg-white/10',
-              ].join(' ')}
+                  ? 'bg-purple-700 text-white'
+                  : 'bg-white/5 text-white/80 hover:bg-white/10'
+              }`}
             >
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* BUTOANE: vezi profil + mesaje */}
-        <div className="flex items-center gap-3 mt-3 md:mt-0">
+        <div className="flex items-center gap-3">
           {profile?.slug && (
             <Link
               href={`/influencer/${profile.slug}`}
@@ -70,7 +86,6 @@ export default function InfluencerDashboard() {
               Vezi profil public
             </Link>
           )}
-
           <Link
             href="/messages"
             className="px-4 py-2 bg-fuchsia-700 hover:bg-fuchsia-800 rounded-lg text-sm font-medium transition"
@@ -80,8 +95,8 @@ export default function InfluencerDashboard() {
         </div>
       </div>
 
-      {/* 🔹 Conținut taburi */}
-      <div className="space-y-6">
+      {/* Conținut taburi */}
+      <div className="space-y-6 transition-opacity duration-300">
         {tab === 'detalii' && <InfluencerDetails />}
         {tab === 'instagram' && <InfluencerInstagram />}
         {tab === 'facebook' && <InfluencerFacebook />}
@@ -93,3 +108,5 @@ export default function InfluencerDashboard() {
     </div>
   );
 }
+
+export default memo(InfluencerDashboard);
