@@ -68,6 +68,7 @@ export default function Navbar() {
         {/* Meniu */}
         <nav className="ml-auto flex items-center gap-1 relative">
           {link('/', 'Acasă')}
+          {link('/influencers', 'Influenceri')}
           {link('/campaigns', 'Campanii')}
 
           {/* dacă e logat ca brand */}
