@@ -26,7 +26,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ro">
-      <body className="bg-black text-white min-h-screen flex flex-col">
+      <body className="fixed inset-0 -z-10 bg-gradient-to-b from-black via-black/90 to-black pointer-events-none"">
         <LayoutClient>{children}</LayoutClient>
         {/* 🔍 Analytics + Performance */}
         <Analytics />
