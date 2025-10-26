@@ -35,7 +35,10 @@ export default function InfluencersPage() {
   );
 
   return (
-    <div className="min-h-screen text-white bg-gradient-to-b from-black via-black/90 to-black">
+    <div className="min-h-screen text-white relative">
+      {/* 🔮 BACKGROUND GRADIENT FIX — layer fix peste tot ecranul */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-black via-black/90 to-black pointer-events-none" />
+
       {/* HERO / FILTRE */}
       <section className="py-20 px-6 text-center border-b border-white/10">
         <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
@@ -99,7 +102,7 @@ export default function InfluencersPage() {
                   <div>
                     <p className="text-sm text-gray-400">{inf.category || 'Categorie necunoscută'}</p>
                     <p className="text-purple-400 font-semibold text-sm">
-                      ⭐ {inf.rating ? inf.rating.toFixed(1) : 'Nou'}
+                      ⭐ {inf.rating ? Number(inf.rating).toFixed(1) : 'Nou'}
                     </p>
                   </div>
                   <span className="text-sm font-medium px-4 py-2 rounded-lg bg-purple-700/80 hover:bg-purple-800 transition">
